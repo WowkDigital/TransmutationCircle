@@ -10,10 +10,6 @@ export class CircleRenderer {
         this.svg.innerHTML = '';
     }
 
-    setStyles(theme) {
-        this.svg.style.background = theme.bg;
-    }
-
     createElement(type, attributes = {}, textContent = '') {
         const el = document.createElementNS(this.NS, type);
         Object.entries(attributes).forEach(([k, v]) => el.setAttribute(k, v));
@@ -66,14 +62,15 @@ export class CircleRenderer {
 
     render(config) {
         this.clear();
-        const { rings, poly, stars, rot, dens, lw, themeKey, toggles, selectedSym } = config;
-        const theme = THEMES[themeKey];
-        const S = theme.stroke;
-        const S2 = theme.stroke2;
+        const { rings, poly, stars, rot, dens, lw, toggles, selectedSym } = config;
+        const { colBg, colPrim, colSec, colOutText, colInText, colCenter, sizeOuter, sizeInner, sizeCenter } = config;
+        
+        const S = colPrim;
+        const S2 = colSec;
         const W = 520, H = 520, CX = W / 2, CY = H / 2;
         const baseR = 220;
 
-        this.setStyles(theme);
+        this.svg.style.background = colBg;
 
         // Defs for hatch pattern
         if (toggles.hatch) {
@@ -113,8 +110,8 @@ export class CircleRenderer {
                 defs.appendChild(pathEl);
                 
                 const tp = document.createElementNS(this.NS, 'text');
-                tp.setAttribute('font-size', '14');
-                tp.setAttribute('fill', S2);
+                tp.setAttribute('font-size', sizeOuter.toString());
+                tp.setAttribute('fill', colOutText);
                 tp.setAttribute('font-family', "'Monsieur La Doulaise', cursive");
                 
                 const tpath = document.createElementNS(this.NS, 'textPath');
@@ -188,13 +185,16 @@ export class CircleRenderer {
 
         // Nodes
         if (toggles.nodes) {
-            const nodesGroup = this.createElement('g', toggles.animate ? { class: 'animate-pulse' } : {});
+            const nodesWrapper = this.createElement('g', toggles.animate ? { class: 'animate-rotate-slow' } : {});
+            const nodesGroup = document.createElementNS(this.NS, 'g');
+            if (toggles.animate) nodesGroup.setAttribute('class', 'animate-pulse');
+            nodesWrapper.appendChild(nodesGroup);
             pPts.forEach(([x, y], idx) => {
                 const nodeCircle = document.createElementNS(this.NS, 'circle');
                 nodeCircle.setAttribute('cx', x);
                 nodeCircle.setAttribute('cy', y);
                 nodeCircle.setAttribute('r', 8);
-                nodeCircle.setAttribute('fill', theme.bg);
+                nodeCircle.setAttribute('fill', colBg);
                 nodeCircle.setAttribute('stroke', S);
                 nodeCircle.setAttribute('stroke-width', lw);
                 nodesGroup.appendChild(nodeCircle);
@@ -219,7 +219,7 @@ export class CircleRenderer {
                         smallNode.setAttribute('cx', x);
                         smallNode.setAttribute('cy', y);
                         smallNode.setAttribute('r', 5);
-                        smallNode.setAttribute('fill', theme.bg);
+                        smallNode.setAttribute('fill', colBg);
                         smallNode.setAttribute('stroke', S2);
                         smallNode.setAttribute('stroke-width', lw * 0.7);
                         smallNode.setAttribute('opacity', 0.8);
@@ -248,7 +248,8 @@ export class CircleRenderer {
 
         // Inner text
         if (toggles.innerText && rings >= 2) {
-            const innerTextR = ringRs[rings >= 3 ? rings - 2 : 0] * 0.98;
+            const innerRingR = ringRs[rings >= 3 ? rings - 2 : 0];
+            const innerTextR = innerRingR - sizeInner - 2;
             const numSegs2 = Math.floor(dens) + 2;
             const innerTextGroup = this.createElement('g', toggles.animate ? { class: 'animate-rotate-rev' } : {});
             
@@ -269,8 +270,8 @@ export class CircleRenderer {
                 defs2.appendChild(pathEl2);
                 
                 const tp2 = document.createElementNS(this.NS, 'text');
-                tp2.setAttribute('font-size', '12');
-                tp2.setAttribute('fill', S2);
+                tp2.setAttribute('font-size', sizeInner.toString());
+                tp2.setAttribute('fill', colInText);
                 tp2.setAttribute('opacity', '0.7');
                 tp2.setAttribute('font-family', "'Monsieur La Doulaise', cursive");
                 
@@ -291,7 +292,7 @@ export class CircleRenderer {
             c1.setAttribute('cx', CX);
             c1.setAttribute('cy', CY);
             c1.setAttribute('r', 28);
-            c1.setAttribute('fill', theme.bg);
+            c1.setAttribute('fill', colBg);
             c1.setAttribute('stroke', S);
             c1.setAttribute('stroke-width', lw);
             centerGroup.appendChild(c1);
@@ -309,8 +310,8 @@ export class CircleRenderer {
             t1.setAttribute('x', CX);
             t1.setAttribute('y', CY + 10);
             t1.setAttribute('text-anchor', 'middle');
-            t1.setAttribute('font-size', '26');
-            t1.setAttribute('fill', S);
+            t1.setAttribute('font-size', sizeCenter.toString());
+            t1.setAttribute('fill', colCenter);
             t1.setAttribute('font-family', 'serif');
             t1.textContent = sym.p;
             centerGroup.appendChild(t1);

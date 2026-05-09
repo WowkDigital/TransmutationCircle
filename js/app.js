@@ -4,7 +4,19 @@ import { CircleRenderer } from './renderer.js';
 class CircleApp {
     constructor() {
         this.renderer = new CircleRenderer(document.getElementById('circle-svg'));
-        this.state = { ...PRESETS.human, selectedSym: 0 };
+        this.state = { 
+            ...PRESETS.human, 
+            selectedSym: 0,
+            sizeOuter: 14,
+            sizeInner: 12,
+            sizeCenter: 26,
+            colBg: '#050403',
+            colPrim: '#c9a84c',
+            colSec: '#8a6d1e',
+            colOutText: '#8a6d1e',
+            colInText: '#8a6d1e',
+            colCenter: '#c9a84c'
+        };
         
         this.init();
     }
@@ -13,6 +25,18 @@ class CircleApp {
         this.buildSymbolPicker();
         this.attachEventListeners();
         this.loadPreset('human');
+    }
+
+    applyThemeColors(themeKey) {
+        const t = THEMES[themeKey];
+        if (t) {
+            this.state.colBg = t.bg;
+            this.state.colPrim = t.stroke;
+            this.state.colSec = t.stroke2;
+            this.state.colOutText = t.stroke2;
+            this.state.colInText = t.stroke2;
+            this.state.colCenter = t.stroke;
+        }
     }
 
     buildSymbolPicker() {
@@ -58,9 +82,36 @@ class CircleApp {
             });
         });
 
+        // Text Sliders
+        const textSliders = ['sizeOuter', 'sizeInner', 'sizeCenter'];
+        textSliders.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    this.state[id] = parseInt(el.value);
+                    this.updateUI();
+                    this.render();
+                });
+            }
+        });
+
+        // Colors
+        const colors = ['colBg', 'colPrim', 'colSec', 'colOutText', 'colInText', 'colCenter'];
+        colors.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    this.state[id] = el.value;
+                    this.render();
+                });
+            }
+        });
+
         // Theme
         document.getElementById('theme').addEventListener('change', (e) => {
             this.state.theme = e.target.value;
+            this.applyThemeColors(this.state.theme);
+            this.updateUI();
             this.render();
         });
 
@@ -77,11 +128,23 @@ class CircleApp {
 
     updateUI() {
         // Update slider values display
-        const sliders = ['rings', 'poly', 'stars', 'rot', 'dens', 'lw'];
+        const sliders = ['rings', 'poly', 'stars', 'rot', 'dens', 'lw', 'sizeOuter', 'sizeInner', 'sizeCenter'];
         sliders.forEach(id => {
-            document.getElementById(id).value = this.state[id];
-            const valEl = document.getElementById(`${id}-val`);
-            if (valEl) valEl.textContent = this.state[id];
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = this.state[id];
+                const valEl = document.getElementById(`${id}-val`);
+                if (valEl) valEl.textContent = this.state[id];
+            }
+        });
+
+        // Update colors
+        const colors = ['colBg', 'colPrim', 'colSec', 'colOutText', 'colInText', 'colCenter'];
+        colors.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = this.state[id];
+            }
         });
 
         // Update toggles
@@ -106,12 +169,14 @@ class CircleApp {
         const preset = PRESETS[name];
         if (!preset) return;
         this.state = { ...this.state, ...preset, selectedSym: preset.sym };
+        this.applyThemeColors(this.state.theme);
         this.updateUI();
         this.render();
     }
 
     randomize() {
         this.state = {
+            ...this.state,
             rings: Math.floor(Math.random() * 4) + 2,
             poly: Math.floor(Math.random() * 6) + 3,
             stars: Math.floor(Math.random() * 3),
@@ -127,9 +192,9 @@ class CircleApp {
             dashes: Math.random() > 0.6,
             double: Math.random() > 0.5,
             hatch: Math.random() > 0.7,
-            center: true,
-            animate: this.state.animate // keep current animation state
+            center: true
         };
+        this.applyThemeColors(this.state.theme);
         this.updateUI();
         this.render();
     }
