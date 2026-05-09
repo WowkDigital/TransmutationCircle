@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmutation Circle Generator | Fullmetal Alchemist</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/app.js"></script>
+</head>
+<body>
+    <header>
+        <h1>✦ Transmutation Circle Generator ✦</h1>
+        <div class="subtitle">Fullmetal Alchemist — Alchemical Design Studio</div>
+    </header>
+
+    <main class="app-container">
+        <aside class="sidebar">
+            <section class="section">
+                <div class="section-title">Preset Circles</div>
+                <div class="preset-grid">
+                    <button class="preset-btn" data-preset="human">Human<br>Transmutation</button>
+                    <button class="preset-btn" data-preset="flame">Flame<br>Alchemy</button>
+                    <button class="preset-btn" data-preset="metal">Metal<br>Binding</button>
+                    <button class="preset-btn" data-preset="earth">Earth<br>Alchemy</button>
+                    <button class="preset-btn" data-preset="water">Water<br>Seal</button>
+                    <button class="preset-btn" data-preset="dark">Dark<br>Alchemy</button>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">Geometry</div>
+                <div class="control-group">
+                    <div class="slider-row">
+                        <label>Rings</label>
+                        <input type="range" id="rings" min="1" max="5" value="3">
+                        <span class="value" id="rings-val">3</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Polygon</label>
+                        <input type="range" id="poly" min="3" max="8" value="6">
+                        <span class="value" id="poly-val">6</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Inner Stars</label>
+                        <input type="range" id="stars" min="0" max="3" value="1">
+                        <span class="value" id="stars-val">1</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Rotation °</label>
+                        <input type="range" id="rot" min="0" max="360" value="0">
+                        <span class="value" id="rot-val">0</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>Density</label>
+                        <input type="range" id="dens" min="1" max="5" value="3">
+                        <span class="value" id="dens-val">3</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">Elements</div>
+                <div class="toggle-grid">
+                    <label class="toggle-btn" id="t-outerText"><input type="checkbox">Outer Text</label>
+                    <label class="toggle-btn" id="t-innerText"><input type="checkbox">Inner Text</label>
+                    <label class="toggle-btn" id="t-nodes"><input type="checkbox">Nodes</label>
+                    <label class="toggle-btn" id="t-crosslines"><input type="checkbox">Cross Lines</label>
+                    <label class="toggle-btn" id="t-dashes"><input type="checkbox">Dashed Ring</label>
+                    <label class="toggle-btn" id="t-double"><input type="checkbox">Double Outer</label>
+                    <label class="toggle-btn" id="t-hatch"><input type="checkbox">Hatch Fill</label>
+                    <label class="toggle-btn" id="t-center"><input type="checkbox">Center Sym</label>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">Center Symbol</div>
+                <div class="symbol-grid" id="symbol-picker">
+                    <!-- Dynamic -->
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">Visual Style</div>
+                <div class="control-group">
+                    <div class="slider-row">
+                        <label>Line Width</label>
+                        <input type="range" id="lw" min="1" max="4" value="1" step="0.5">
+                        <span class="value" id="lw-val">1</span>
+                    </div>
+                    <select id="theme">
+                        <option value="gold">Alchemical Gold</option>
+                        <option value="white">Parchment White</option>
+                        <option value="red">Blood Circle</option>
+                        <option value="blue">Azure Seal</option>
+                        <option value="green">Verdant Alchemy</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">Actions</div>
+                <div class="button-stack">
+                    <button class="btn btn-primary" id="btn-randomize">⊕ Randomize</button>
+                    <button class="btn" id="btn-export">↓ Export SVG</button>
+                    <button class="btn btn-danger" id="btn-reset">✕ Reset</button>
+                </div>
+            </section>
+
+            <div class="info-box">
+                Humankind cannot gain anything without first giving something in return. To obtain, something of equal value must be lost. That is alchemy's first law of Equivalent Exchange.
+            </div>
+        </aside>
+
+        <section class="canvas-area">
+            <svg id="circle-svg" width="520" height="520" viewBox="0 0 520 520"></svg>
+        </section>
+    </main>
+</body>
+</html>
