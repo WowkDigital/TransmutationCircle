@@ -29,33 +29,37 @@ body {
     overflow-x: hidden;
 }
 
-header {
-    padding: 20px 0 10px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
+.sidebar-brand {
+    padding-bottom: 20px;
+    border-bottom: 2px double var(--border);
+    margin-bottom: 10px;
 }
 
 h1 {
     font-family: 'Cinzel', serif;
-    font-size: 22px;
-    letter-spacing: 4px;
+    font-size: 18px;
+    letter-spacing: 2px;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     text-shadow: 0 0 15px rgba(201, 168, 76, 0.2);
+    line-height: 1.3;
+    text-align: center;
 }
 
 .subtitle {
-    font-size: 13px;
+    font-size: 11px;
     color: var(--text2);
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     font-style: italic;
+    text-align: center;
+    line-height: 1.4;
 }
 
 .app-container {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    height: calc(100vh - 85px);
+    grid-template-columns: 320px 1fr;
+    height: 100vh;
 }
 
 .sidebar {
@@ -80,11 +84,27 @@ h1 {
 
 .canvas-area {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 40px;
     background: radial-gradient(circle at center, #15120e 0%, var(--bg) 100%);
+    overflow: hidden;
+}
+
+#circle-svg {
+    background: var(--canvas-bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 0 60px rgba(0,0,0,0.6), 0 0 30px rgba(201, 168, 76, 0.05);
+    height: 100%;
+    max-width: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+#circle-svg:hover {
+    box-shadow: 0 0 80px rgba(0,0,0,0.7), 0 0 40px rgba(201, 168, 76, 0.1);
 }
 
 .section {
@@ -312,15 +332,7 @@ select:focus {
     border-color: #ff6060;
 }
 
-/* SVG Styling */
-#circle-svg {
-    background: var(--canvas-bg);
-    border: 1px solid var(--border);
-    box-shadow: 0 0 40px rgba(0,0,0,0.5), 0 0 20px rgba(201, 168, 76, 0.05);
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 2px;
-}
+/* SVG Styling removed from here, moved up */
 
 /* Info */
 .info-box {
