@@ -16,12 +16,11 @@ export const THEMES = {
 };
 
 export const ALCH_TEXTS = [
-    "Pale white and black with false citrine", "Imperfect white and red", "After the perfect white follows the glory",
-    "The peacock's feathers in bright colours", "The rainbow in the sky above", "The peacock, the green follows the joy",
-    "And after these shall appear the substance", "Appears before you in perfect white", "The crow and beak, black as toad they shall",
-    "Leathers in bright adorn", "The rainbow in the sky above, the spotted panther, the green lion",
-    "True shall appear before you in lighter water, post white and black with false citrine",
-    "Ponder the gem that thus the crow and beak"
+    "Lorem ipsum dolor sit amet", "consectetur adipisicing elit", "sed do eiusmod tempor incididunt",
+    "ut labore et dolore magna aliqua", "Ut enim ad minim veniam", "quis nostrud exercitation ullamco",
+    "laboris nisi ut aliquip ex ea", "commodo consequat. Duis aute irure", "dolor in reprehenderit in voluptate",
+    "velit esse cillum dolore eu fugiat", "nulla pariatur. Excepteur sint occaecat", "cupidatat non proident, sunt in culpa",
+    "qui officia deserunt mollit anim", "id est laborum."
 ];
 
 export const PRESETS = {

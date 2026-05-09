@@ -47,7 +47,7 @@ class CircleApp {
         });
 
         // Toggles
-        const toggles = ['outerText', 'innerText', 'nodes', 'crosslines', 'dashes', 'double', 'hatch', 'center'];
+        const toggles = ['outerText', 'innerText', 'nodes', 'crosslines', 'dashes', 'double', 'hatch', 'center', 'animate'];
         toggles.forEach(id => {
             const el = document.getElementById(`t-${id}`);
             const input = el.querySelector('input');
@@ -85,7 +85,7 @@ class CircleApp {
         });
 
         // Update toggles
-        const toggles = ['outerText', 'innerText', 'nodes', 'crosslines', 'dashes', 'double', 'hatch', 'center'];
+        const toggles = ['outerText', 'innerText', 'nodes', 'crosslines', 'dashes', 'double', 'hatch', 'center', 'animate'];
         toggles.forEach(id => {
             const el = document.getElementById(`t-${id}`);
             const input = el.querySelector('input');
@@ -127,7 +127,8 @@ class CircleApp {
             dashes: Math.random() > 0.6,
             double: Math.random() > 0.5,
             hatch: Math.random() > 0.7,
-            center: true
+            center: true,
+            animate: this.state.animate // keep current animation state
         };
         this.updateUI();
         this.render();
@@ -161,7 +162,8 @@ class CircleApp {
                 dashes: this.state.dashes,
                 double: this.state.double,
                 hatch: this.state.hatch,
-                center: this.state.center
+                center: this.state.center,
+                animate: this.state.animate
             }
         });
     }

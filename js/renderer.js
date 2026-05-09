@@ -94,6 +94,7 @@ export class CircleRenderer {
             const numSegs = Math.floor(dens * 2 + 2);
             const textArr = ALCH_TEXTS.slice(0, numSegs);
             
+            const textGroup = this.createElement('g', toggles.animate ? { class: 'animate-rotate' } : {});
             textArr.forEach((txt, i) => {
                 const startAngle = ((i / numSegs) * 360) - 90;
                 const endAngle = (((i + 0.85) / numSegs) * 360) - 90;
@@ -112,15 +113,15 @@ export class CircleRenderer {
                 defs.appendChild(pathEl);
                 
                 const tp = document.createElementNS(this.NS, 'text');
-                tp.setAttribute('font-size', '9');
+                tp.setAttribute('font-size', '14');
                 tp.setAttribute('fill', S2);
-                tp.setAttribute('font-family', 'Crimson Pro, serif');
+                tp.setAttribute('font-family', "'Monsieur La Doulaise', cursive");
                 
                 const tpath = document.createElementNS(this.NS, 'textPath');
                 tpath.setAttribute('href', `#${id}`);
                 tpath.textContent = txt;
                 tp.appendChild(tpath);
-                this.svg.appendChild(tp);
+                textGroup.appendChild(tp);
             });
         }
 
@@ -141,20 +142,32 @@ export class CircleRenderer {
 
         const outerR = ringRs[ringRs.length - 1];
 
+        // Polygons and Lines Group
+        const polyGroup = this.createElement('g', toggles.animate ? { class: 'animate-rotate-slow' } : {});
+        
         // Polygon
         const pPts = this.getPolyPoints(CX, CY, outerR * 0.92, poly, rot);
-        this.drawPolygon(pPts, { fill: 'none', stroke: S, 'stroke-width': lw });
+        const polyEl = document.createElementNS(this.NS, 'polygon');
+        polyEl.setAttribute('points', pPts.map(([x, y]) => `${x},${y}`).join(' '));
+        polyEl.setAttribute('fill', 'none');
+        polyEl.setAttribute('stroke', S);
+        polyEl.setAttribute('stroke-width', lw);
+        polyGroup.appendChild(polyEl);
 
         // Cross lines
         if (toggles.crosslines) {
             const skip = Math.max(1, Math.floor(poly / 2.5));
             for (let i = 0; i < poly; i++) {
                 for (let j = i + skip; j < poly; j += skip) {
-                    this.drawLine(pPts[i][0], pPts[i][1], pPts[j][0], pPts[j][1], {
-                        stroke: S2,
-                        'stroke-width': lw * 0.5,
-                        opacity: 0.5
-                    });
+                    const line = document.createElementNS(this.NS, 'line');
+                    line.setAttribute('x1', pPts[i][0]);
+                    line.setAttribute('y1', pPts[i][1]);
+                    line.setAttribute('x2', pPts[j][0]);
+                    line.setAttribute('y2', pPts[j][1]);
+                    line.setAttribute('stroke', S2);
+                    line.setAttribute('stroke-width', lw * 0.5);
+                    line.setAttribute('opacity', 0.5);
+                    polyGroup.appendChild(line);
                 }
             }
         }
@@ -164,21 +177,37 @@ export class CircleRenderer {
             const sc = 0.92 - s * 0.18;
             if (sc < 0.15) break;
             const pp = this.getPolyPoints(CX, CY, outerR * sc, poly, rot + 180 / poly);
-            this.drawPolygon(pp, { fill: 'none', stroke: S2, 'stroke-width': lw * 0.5, opacity: 0.4 });
+            const inPoly = document.createElementNS(this.NS, 'polygon');
+            inPoly.setAttribute('points', pp.map(([x, y]) => `${x},${y}`).join(' '));
+            inPoly.setAttribute('fill', 'none');
+            inPoly.setAttribute('stroke', S2);
+            inPoly.setAttribute('stroke-width', lw * 0.5);
+            inPoly.setAttribute('opacity', 0.4);
+            polyGroup.appendChild(inPoly);
         }
 
         // Nodes
         if (toggles.nodes) {
+            const nodesGroup = this.createElement('g', toggles.animate ? { class: 'animate-pulse' } : {});
             pPts.forEach(([x, y], idx) => {
-                this.drawCircle(x, y, 8, { fill: theme.bg, stroke: S, 'stroke-width': lw });
+                const nodeCircle = document.createElementNS(this.NS, 'circle');
+                nodeCircle.setAttribute('cx', x);
+                nodeCircle.setAttribute('cy', y);
+                nodeCircle.setAttribute('r', 8);
+                nodeCircle.setAttribute('fill', theme.bg);
+                nodeCircle.setAttribute('stroke', S);
+                nodeCircle.setAttribute('stroke-width', lw);
+                nodesGroup.appendChild(nodeCircle);
                 
-                // Use different symbols for nodes based on their position
                 const nodeSymIdx = (selectedSym + idx) % SYMBOLS.length;
-                this.drawText(x, y + 4, SYMBOLS[nodeSymIdx].p, {
-                    'text-anchor': 'middle',
-                    'font-size': '9',
-                    fill: S
-                });
+                const nodeText = document.createElementNS(this.NS, 'text');
+                nodeText.setAttribute('x', x);
+                nodeText.setAttribute('y', y + 4);
+                nodeText.setAttribute('text-anchor', 'middle');
+                nodeText.setAttribute('font-size', '9');
+                nodeText.setAttribute('fill', S);
+                nodeText.textContent = SYMBOLS[nodeSymIdx].p;
+                nodesGroup.appendChild(nodeText);
             });
             
             if (rings >= 2) {
@@ -186,29 +215,42 @@ export class CircleRenderer {
                 const innerPts = this.getPolyPoints(CX, CY, innerR, poly, rot + 180 / poly);
                 innerPts.forEach(([x, y], i) => {
                     if (i % 2 === 0) {
-                        this.drawCircle(x, y, 5, { fill: theme.bg, stroke: S2, 'stroke-width': lw * 0.7, opacity: 0.8 });
+                        const smallNode = document.createElementNS(this.NS, 'circle');
+                        smallNode.setAttribute('cx', x);
+                        smallNode.setAttribute('cy', y);
+                        smallNode.setAttribute('r', 5);
+                        smallNode.setAttribute('fill', theme.bg);
+                        smallNode.setAttribute('stroke', S2);
+                        smallNode.setAttribute('stroke-width', lw * 0.7);
+                        smallNode.setAttribute('opacity', 0.8);
+                        nodesGroup.appendChild(smallNode);
                     }
                 });
             }
         }
 
         // Star layers
-        for (let s = 0; s < stars; s++) {
-            const starN = Math.max(5, poly - s);
-            const stR = outerR * (0.45 - s * 0.15);
-            const stPts = this.getStarPoints(CX, CY, stR, stR * 0.45, starN, rot + s * 30);
-            this.drawPolygon(stPts, {
-                fill: 'none',
-                stroke: s === 0 ? S : S2,
-                'stroke-width': lw * (s === 0 ? 1 : 0.6),
-                opacity: s === 0 ? 1 : 0.6
-            });
+        if (stars > 0) {
+            const starGroup = this.createElement('g', toggles.animate ? { class: 'animate-rotate-rev' } : {});
+            for (let s = 0; s < stars; s++) {
+                const starN = Math.max(5, poly - s);
+                const stR = outerR * (0.45 - s * 0.15);
+                const stPts = this.getStarPoints(CX, CY, stR, stR * 0.45, starN, rot + s * 30);
+                const starEl = document.createElementNS(this.NS, 'polygon');
+                starEl.setAttribute('points', stPts.map(([x, y]) => `${x},${y}`).join(' '));
+                starEl.setAttribute('fill', 'none');
+                starEl.setAttribute('stroke', s === 0 ? S : S2);
+                starEl.setAttribute('stroke-width', lw * (s === 0 ? 1 : 0.6));
+                starEl.setAttribute('opacity', s === 0 ? 1 : 0.6);
+                starGroup.appendChild(starEl);
+            }
         }
 
         // Inner text
         if (toggles.innerText && rings >= 2) {
             const innerTextR = ringRs[rings >= 3 ? rings - 2 : 0] * 0.98;
             const numSegs2 = Math.floor(dens) + 2;
+            const innerTextGroup = this.createElement('g', toggles.animate ? { class: 'animate-rotate-rev' } : {});
             
             for (let i = 0; i < numSegs2; i++) {
                 const startAngle = ((i / numSegs2) * 360) - 90;
@@ -227,30 +269,51 @@ export class CircleRenderer {
                 defs2.appendChild(pathEl2);
                 
                 const tp2 = document.createElementNS(this.NS, 'text');
-                tp2.setAttribute('font-size', '8');
+                tp2.setAttribute('font-size', '12');
                 tp2.setAttribute('fill', S2);
                 tp2.setAttribute('opacity', '0.7');
-                tp2.setAttribute('font-family', 'Crimson Pro, serif');
+                tp2.setAttribute('font-family', "'Monsieur La Doulaise', cursive");
                 
                 const tpath2 = document.createElementNS(this.NS, 'textPath');
                 tpath2.setAttribute('href', `#${id2}`);
                 tpath2.textContent = ALCH_TEXTS[(i + 5) % ALCH_TEXTS.length];
                 tp2.appendChild(tpath2);
-                this.svg.appendChild(tp2);
+                innerTextGroup.appendChild(tp2);
             }
         }
 
         // Center symbol
         if (toggles.center) {
+            const centerGroup = this.createElement('g', toggles.animate ? { class: 'animate-glow' } : {});
             const sym = SYMBOLS[selectedSym];
-            this.drawCircle(CX, CY, 28, { fill: theme.bg, stroke: S, 'stroke-width': lw });
-            this.drawCircle(CX, CY, 22, { fill: 'none', stroke: S2, 'stroke-width': lw * 0.5 });
-            this.drawText(CX, CY + 10, sym.p, {
-                'text-anchor': 'middle',
-                'font-size': '26',
-                fill: S,
-                'font-family': 'serif'
-            });
+            
+            const c1 = document.createElementNS(this.NS, 'circle');
+            c1.setAttribute('cx', CX);
+            c1.setAttribute('cy', CY);
+            c1.setAttribute('r', 28);
+            c1.setAttribute('fill', theme.bg);
+            c1.setAttribute('stroke', S);
+            c1.setAttribute('stroke-width', lw);
+            centerGroup.appendChild(c1);
+
+            const c2 = document.createElementNS(this.NS, 'circle');
+            c2.setAttribute('cx', CX);
+            c2.setAttribute('cy', CY);
+            c2.setAttribute('r', 22);
+            c2.setAttribute('fill', 'none');
+            c2.setAttribute('stroke', S2);
+            c2.setAttribute('stroke-width', lw * 0.5);
+            centerGroup.appendChild(c2);
+
+            const t1 = document.createElementNS(this.NS, 'text');
+            t1.setAttribute('x', CX);
+            t1.setAttribute('y', CY + 10);
+            t1.setAttribute('text-anchor', 'middle');
+            t1.setAttribute('font-size', '26');
+            t1.setAttribute('fill', S);
+            t1.setAttribute('font-family', 'serif');
+            t1.textContent = sym.p;
+            centerGroup.appendChild(t1);
         }
     }
 }

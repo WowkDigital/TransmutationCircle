@@ -345,6 +345,51 @@ select:focus {
     font-style: italic;
 }
 
+/* Animations */
+@keyframes alchemical-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes alchemical-rotate-rev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+@keyframes alchemical-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes alchemical-glow {
+    0%, 100% { filter: drop-shadow(0 0 2px var(--gold-dark)); }
+    50% { filter: drop-shadow(0 0 8px var(--gold)); }
+}
+
+.animate-rotate {
+    transform-origin: 260px 260px;
+    animation: alchemical-rotate 20s linear infinite;
+}
+
+.animate-rotate-slow {
+    transform-origin: 260px 260px;
+    animation: alchemical-rotate 40s linear infinite;
+}
+
+.animate-rotate-rev {
+    transform-origin: 260px 260px;
+    animation: alchemical-rotate-rev 30s linear infinite;
+}
+
+.animate-pulse {
+    transform-origin: center;
+    animation: alchemical-pulse 4s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: alchemical-glow 3s ease-in-out infinite;
+}
+
 @media (max-width: 800px) {
     .app-container {
         grid-template-columns: 1fr;
